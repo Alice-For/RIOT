@@ -23,8 +23,8 @@ extern "C" {
 #define NO_OLD_RNGNAME
 
 /* Uncomment the next two lines to enable wolfSSL debug */
-// #define DEBUG_WOLFSSL
-// #define WOLFSSL_LOG_PRINTF
+#define DEBUG_WOLFSSL
+#define WOLFSSL_LOG_PRINTF
 
 /* Single precision math */
 #define WOLFSSL_SP_MATH
@@ -37,12 +37,31 @@ extern "C" {
 /* GNRC support enabled if not
  * using sockets
  */
+
+/* Original code just in case things turn mad
 #ifndef MODULE_WOLFSSL_SOCKET
 #define WOLFSSL_GNRC
 #define WOLFSSL_USER_IO
 #else
 #include <sys/socket.h>
 #endif
+*/
+
+//pas réussi à faire marcher mon module sorti de nulle part, du coup j'ai dégagé l'option posix
+//peut-être moyen d'utiliser un define tout simple à la place du module. A voir quand tout ça marchera :'(
+//(un jour, on y croit)
+#ifndef MODULE_WOLFSSL_SOCKET
+#define WOLFSSL_GNRC
+#define WOLFSSL_USER_IO
+#else /*MODULE_WOLFSSL_SOCKET*/
+#define WOLFSSL_LWIP //on tente
+#define SINGLE_THREADED //là aussi
+#include <net/sock.h>
+#include <wolfssl/ssl.h>
+#include <sys/socket.h>
+#endif /*MODULE_WOLFSSL_SOCKET*/
+
+//#include <sys/socket.h> //utilisé pour les posix
 
 /* Select wolfcrypt only / +wolfssl
  * at compile time (via USEMODULE)

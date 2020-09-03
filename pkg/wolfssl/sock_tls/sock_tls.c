@@ -59,7 +59,12 @@ static int tls_session_create(sock_tls_t *sk)
     }
     wolfSSL_SetIOReadCtx(sk->ssl, sk);
     wolfSSL_SetIOWriteCtx(sk->ssl, sk);
+    #ifdef WOLFSSL_GNRC
     sk->ssl->gnrcCtx = sk;
+    #endif
+    #if defined(WOLFSSL_APACHE_MYNEWT) && !defined(WOLFSSL_LWIP) && defined(WOLFSSL_RIOT_OS)
+    sk->ssl->lwipCtx = sk;
+    #endif
     return 0;
 }
 

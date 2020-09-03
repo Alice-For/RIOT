@@ -183,11 +183,22 @@ void lwip_bootstrap(void)
 #ifdef MODULE_NETDEV_TAP
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
         netdev_tap_setup(&netdev_taps[i], &netdev_tap_params[i]);
-        if (_netif_add(&netif[i], &netdev_taps[i], lwip_netdev_init,
+        //commit https://github.com/RIOT-OS/RIOT/commit/bd44f635577f3a4bddb0ac0d5e0a6addf64946e2 - lets try it
+        #ifdef MODULE_LWIP_IPV4
+        if (netif_add(&netif[i], IP4_ADDR_ANY, IP4_ADDR_ANY, IP4_ADDR_ANY,
+                      &netdev_taps[i], lwip_netdev_init,
+                      tcpip_input) == NULL) {
+            DEBUG("Could not add netdev_tap device\n");
+            return;
+    }
+    #else /* MODULE_LWIP_IPV4 */ //"end" of commit
+        
+    if (_netif_add(&netif[i], &netdev_taps[i], lwip_netdev_init,
                        tcpip_input) == NULL) {
             DEBUG("Could not add netdev_tap device\n");
             return;
         }
+    #endif /* MODULE_LWIP_IPV4 */
     }
 #elif defined(MODULE_MRF24J40)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
@@ -269,13 +280,16 @@ void lwip_bootstrap(void)
 #endif
     /* also allow for external interface definition */
     tcpip_init(NULL, NULL);
-#if IS_USED(MODULE_LWIP_DHCP_AUTO) && IS_USED(MODULE_NETDEV_TAP)
+#if IS_USED(MODULE_LWIP_DHCP_AUTO) && IS_USED(MODULE_NETDEV_TAP) || IS_USED(MODULE_STM32_ETH)
+#if IS_USED(MODULE_LWIP_IPV4)
+//#if IS_USED(MODULE_LWIP_DHCP_AUTO) && IS_USED(MODULE_NETDEV_TAP) //initially - test from aabadie
     /* XXX: Hack to get DHCP with IPv4 with `netdev_tap`, as it does
      * not emit a `NETDEV_EVENT_LINK_UP` event. Remove, once it does
      * at an appropriate point.
      * (see https://github.com/RIOT-OS/RIOT/pull/14150) */
     dhcp_start(netif);
-#endif
+#endif /*MODULE_LWIP_IPV4*/   
+#endif /*long assertion */
 }
 
 /** @} */
