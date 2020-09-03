@@ -64,6 +64,7 @@ typedef union {
     int undef;
 #ifdef MODULE_SOCK_IP
     sock_ip_t raw;              /**< raw IP sock */
+    sock_ip_t ip;               //to please sock_ip_set_cb on line 402
 #endif /* MODULE_SOCK_IP */
 #ifdef MODULE_SOCK_TCP
     union {
@@ -398,18 +399,22 @@ static void _sock_set_cb(socket_t *socket)
     switch (socket->type) {
 #ifdef MODULE_SOCK_IP
         case SOCK_RAW:
-            sock_ip_set_cb(&socket->sock.ip, callback.ip, socket);
+            //sock_ip_set_cb(&socket->sock.ip, callback.ip, socket);
+            sock_ip_set_cb(&socket->sock->ip, callback.ip, socket);
             break;
 #endif
 #ifdef MODULE_SOCK_TCP
         case SOCK_STREAM:
             /* is a TCP client socket */
             if (socket->queue_array == NULL) {
-                sock_tcp_set_cb(&socket->sock.tcp.sock, callback.tcp, socket);
+                //sock_tcp_set_cb(&socket->sock.tcp.sock, callback.tcp, socket);
+                sock_tcp_set_cb(&socket->sock->tcp.sock, callback.tcp, socket);
             }
             /* is a TCP listening socket */
             else {
-                sock_tcp_queue_set_cb(&socket->sock.tcp.queue,
+                //sock_tcp_queue_set_cb(&socket->sock.tcp.queue,
+                //                      callback.tcp_queue, socket);
+                sock_tcp_queue_set_cb(&socket->sock->tcp.queue,
                                       callback.tcp_queue, socket);
             }
             break;
