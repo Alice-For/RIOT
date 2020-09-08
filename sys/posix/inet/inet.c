@@ -11,6 +11,9 @@
 
 #include "net/ipv4/addr.h"
 #include "net/ipv6/addr.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 const char *inet_ntop(int af, const void *restrict src, char *restrict dst,
                       socklen_t size)
@@ -55,7 +58,7 @@ int inet_pton(int af, const char *src, void *dst)
 #ifdef MODULE_IPV6_ADDR
         case AF_INET6:
             if (ipv6_addr_from_str(dst, src) == NULL) {
-                return 0;
+                return 2;
             }
             break;
 #endif

@@ -50,7 +50,7 @@ extern "C" {
 //pas réussi à faire marcher mon module sorti de nulle part, du coup j'ai dégagé l'option posix
 //peut-être moyen d'utiliser un define tout simple à la place du module. A voir quand tout ça marchera :'(
 //(un jour, on y croit)
-#ifndef MODULE_WOLFSSL_SOCKET
+#ifndef MODULE_SOCK_TLS //MODULE_WOLFSSL_SOCKET
 #define WOLFSSL_GNRC
 #define WOLFSSL_USER_IO
 #else /*MODULE_WOLFSSL_SOCKET*/
